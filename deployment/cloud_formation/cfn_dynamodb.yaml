@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template to create a DynamoDB table.'
+
+Parameters:
+    DDBTableName:
+        Description: DynamoDB table name
+        Type: String
+        Default: "event-detection-table"
+
+Resources:
+    DDBTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            TableName: !Ref DDBTableName
+            AttributeDefinitions:
+                -
+                    AttributeName: "S3Path"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "S3Path"
+                    KeyType: "HASH"
+            "BillingMode" : "PAY_PER_REQUEST"

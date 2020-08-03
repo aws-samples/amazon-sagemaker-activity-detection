@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template to create input S3 bucket.'
+
+Parameters:
+    S3BucketName:
+        Type: String
+        Description: S3 bucket name
+        Default: "event-data-bucket"
+        
+Resources:
+    MyBucket:
+        Type: AWS::S3::Bucket
+        Properties:
+            BucketName: !Sub "${S3BucketName}-${AWS::Region}-${AWS::AccountId}"

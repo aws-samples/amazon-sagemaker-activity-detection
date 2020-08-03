@@ -1,0 +1,190 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template to create AWS Elemental MediaLive Channel.'
+
+Parameters:
+    ChannelName:
+        Type: String
+        Description: MediaLive Channel Name
+        Default: 'event-detection-channel'
+    InputName:
+        Type: String
+        Description: MediaLive Channel Input Name
+        Default: 'event-detection-input'
+    InputVideoBucket:
+        Type: String
+        Description: S3 Bucket where the input video is located
+        Default: 'event-data-bucket'
+    DestinationBucket:
+        Type: String
+        Description: S3 Bucket where the livestream video chunks are stored 
+        Default: 'event-livestream-bucket'
+
+Resources:
+  LivestreamChannel:
+    Type: 'AWS::MediaLive::Channel'
+    DependsOn:
+      - LivestreamInput
+    Properties:
+      Name: !Ref ChannelName
+      RoleArn: !GetAtt myMediaLiveAccessRole.Arn
+      ChannelClass: SINGLE_PIPELINE
+      InputSpecification:
+        Codec: MPEG2
+        Resolution: SD
+        MaximumBitrate: MAX_10_MBPS
+      InputAttachments:
+        - InputId: !Ref LivestreamInput
+          InputAttachmentName: livestream-input
+          InputSettings:
+            SourceEndBehavior: LOOP
+      Destinations:
+        - Id: DestinationUrl
+          Settings:
+            - Url: !Sub "s3://${DestinationBucket}-${AWS::Region}-${AWS::AccountId}/livestream_pipe/channel"
+      EncoderSettings:
+        AudioDescriptions:
+          - AudioTypeControl: FOLLOW_INPUT
+            LanguageCodeControl: FOLLOW_INPUT
+            Name: audio_kiycp9            
+        TimecodeConfig:
+          Source: EMBEDDED
+        VideoDescriptions:
+          - Name: video_3mmxlc
+            RespondToAfd: NONE
+            Sharpness: 50
+            ScalingBehavior: DEFAULT
+        OutputGroups:
+          - OutputGroupSettings:
+              HlsGroupSettings:
+                AdMarkers: []
+                CaptionLanguageSetting: OMIT
+                CaptionLanguageMappings: []
+                HlsCdnSettings:
+                  HlsBasicPutSettings:
+                    NumRetries: 10
+                    ConnectionRetryInterval: 30
+                    RestartDelay: 10
+                    FilecacheDuration: 5
+                InputLossAction: EMIT_OUTPUT
+                ManifestCompression: NONE
+                Destination:
+                  DestinationRefId: DestinationUrl
+                IvInManifest: INCLUDE
+                IvSource: FOLLOWS_SEGMENT_NUMBER
+                ClientCache: ENABLED
+                TsFileMode: SEGMENTED_FILES
+                ManifestDurationFormat: FLOATING_POINT
+                SegmentationMode: USE_SEGMENT_DURATION
+                RedundantManifest: DISABLED
+                OutputSelection: MANIFESTS_AND_SEGMENTS
+                StreamInfResolution: INCLUDE
+                IFrameOnlyPlaylists: DISABLED
+                IndexNSegments: 10
+                ProgramDateTime: EXCLUDE
+                ProgramDateTimePeriod: 600
+                KeepSegments: 21
+                SegmentLength: 10
+                TimedMetadataId3Frame: PRIV
+                TimedMetadataId3Period: 10
+                HlsId3SegmentTagging: DISABLED
+                CodecSpecification: RFC_4281
+                DirectoryStructure: SINGLE_DIRECTORY
+                SegmentsPerSubdirectory: 10000
+                Mode: LIVE
+            Name: TN2224
+            Outputs:
+              - OutputSettings:
+                  HlsOutputSettings:
+                    NameModifier: '_1'
+                    HlsSettings:
+                      StandardHlsSettings:
+                        M3u8Settings:
+                          AudioFramesPerPes: 4
+                          AudioPids: 492-498
+                          NielsenId3Behavior: NO_PASSTHROUGH
+                          PcrControl: PCR_EVERY_PES_PACKET
+                          PmtPid: '480'
+                          ProgramNum: 1
+                          Scte35Pid: '500'
+                          Scte35Behavior: NO_PASSTHROUGH
+                          TimedMetadataPid: '502'
+                          TimedMetadataBehavior: NO_PASSTHROUGH
+                          VideoPid: '481'
+                        AudioRenditionSets: program_audio
+                    H265PackagingType: HVC1
+                OutputName: wenevf
+                VideoDescriptionName: video_3mmxlc
+                AudioDescriptionNames:
+                  - audio_kiycp9
+                  
+  LivestreamInput:
+    Type: 'AWS::MediaLive::Input'
+    Properties:
+      Name: !Ref InputName
+      Type: MP4_FILE
+      Sources:
+        - Url: !Sub 's3://${InputVideoBucket}-${AWS::Region}-${AWS::AccountId}/event-detection/deployment/PeopleSkiing.mp4'
+        
+  myMediaLiveAccessRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: 'myMediaLiveAccessRole'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - "medialive.amazonaws.com"
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+          - 'arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess'
+      Policies:
+        - PolicyName: myMediaLiveCustomPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:ListBucket'
+                  - 's3:PutObject'
+                  - 's3:GetObject'
+                  - 's3:DeleteObject'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'mediastore:ListContainers'
+                  - 'mediastore:PutObject'
+                  - 'mediastore:GetObject'
+                  - 'mediastore:DeleteObject'
+                  - 'mediastore:DescribeObject'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'logs:DescribeLogStreams'
+                  - 'logs:DescribeLogGroups'
+                Resource: 'arn:aws:logs:*:*:*'
+              - Effect: Allow
+                Action:
+                  - 'mediaconnect:ManagedDescribeFlow'
+                  - 'mediaconnect:ManagedAddOutput'
+                  - 'mediaconnect:ManagedRemoveOutput'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'ec2:describeSubnets'
+                  - 'ec2:describeNetworkInterfaces'
+                  - 'ec2:createNetworkInterface'
+                  - 'ec2:createNetworkInterfacePermission'
+                  - 'ec2:deleteNetworkInterface'
+                  - 'ec2:deleteNetworkInterfacePermission'
+                  - 'ec2:describeSecurityGroups'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'mediapackage:DescribeChannel'
+                Resource: '*'

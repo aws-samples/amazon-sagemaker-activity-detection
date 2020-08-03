@@ -1,0 +1,4 @@
+decord==0.3.6
+boto3==1.12.46
+opencv-python==4.2.0.34
+pandas==0.24.2

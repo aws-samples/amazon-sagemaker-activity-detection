@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template to create a lambda function.'
+
+Parameters:
+    LambdaName:
+        Type: String
+        Description: Lambda function name
+        Default: 'event-detection-lambda'
+
+    LambdaCodeBucket:
+        Type: String
+        Description: Lambda SourceCode bucket name
+        Default: 'event-data-bucket'
+
+    TriggerBucketName:
+        Type: String
+        Description: S3 bucket name used to create a trigger
+        Default: 'event-livestream-bucket'
+        
+    DetectionTableName: 
+        Type: String
+        Description: DynamoDB table to save prediction results
+        Default: "event-detection-table"
+
+    EndpointName: 
+        Type: String
+        Description: SageMaker endpoint for model deployment
+        Default: "event-detection-endpoint"
+
+    ModelMaxFrames: 
+        Type: Number
+        Description: Maximum number of frames used for event detection model
+        Default: 32
+        
+Resources:
+    LivestreamLambdaFunction:
+        Type: AWS::Lambda::Function
+        Properties:
+            FunctionName: !Ref LambdaName
+            Runtime: python3.6
+            Role: !GetAtt LivestreamLambdaRole.Arn
+            Code: 
+                S3Bucket: !Sub "${LambdaCodeBucket}-${AWS::Region}-${AWS::AccountId}"
+                S3Key: "event-detection/deployment/lambda/lambda_function.zip"
+            Handler: lambda_function.lambda_handler
+            Timeout: 180
+            MemorySize: 1024
+            Environment:
+                Variables:
+                    #CLASSES_PATH: !Sub "s3://${LambdaCodeBucket}-${AWS::Region}-${AWS::AccountId}/event-detection/deployment/model/classes.txt"
+                    DETECTION_TABLE_NAME: !Ref DetectionTableName
+                    ENDPOINT_NAME: !Ref EndpointName
+                    MODEL_MAX_FRAMES: !Ref ModelMaxFrames
+
+    LivestreamLambdaPermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+            Action: lambda:InvokeFunction
+            FunctionName: !Ref LivestreamLambdaFunction
+            Principal: s3.amazonaws.com
+            SourceArn: 
+                Fn::Sub: "arn:aws:s3:::${TriggerBucketName}-${AWS::Region}-${AWS::AccountId}"
+            SourceAccount: !Ref AWS::AccountId
+            
+    LambdaTrigger:
+       Type: AWS::S3::Bucket
+       DependsOn: LivestreamLambdaPermission
+       Properties:
+           BucketName: !Sub "${TriggerBucketName}-${AWS::Region}-${AWS::AccountId}"
+           NotificationConfiguration:
+               LambdaConfigurations:
+                   - Event: s3:ObjectCreated:*
+                     Filter:
+                       S3Key:
+                           Rules:
+                               - Name: prefix
+                                 Value: "livestream_pipe/"
+                               - Name: suffix
+                                 Value: ".ts"
+                     Function: !GetAtt LivestreamLambdaFunction.Arn
+                     
+    LivestreamLambdaRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            RoleName: 'LivestreamLambdaRole'
+            AssumeRolePolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Principal:
+                      Service:
+                      - "lambda.amazonaws.com"
+                    Action:
+                      - 'sts:AssumeRole'
+            ManagedPolicyArns:
+                - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+                - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+                - 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess'
