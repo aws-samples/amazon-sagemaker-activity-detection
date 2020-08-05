@@ -4,7 +4,7 @@ This code repository contains two parts:
 
 1. [Development](./development): It contains a Jupyter Notebook and its associated python source code to build, train and deploy an activity detection model using Amazon SageMaker. Transfer learning is used to fine-tune an MXNet-based pretrained 3D video classification model with another dataset.
 
-2. [Deployment[(./deployment): It contains CloudFormation templates and other resources to deploy an end-to-end activity detection solution using CloudFormation
+2. [Deployment(./deployment): It contains CloudFormation templates and other resources to deploy an end-to-end activity detection solution using CloudFormation
 
 A blogpost associated with the code repository is found [here](#).
 
