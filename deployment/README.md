@@ -1,4 +1,4 @@
-# Deploy the Activity Detection Solution using CloudFormation Templates
+# Deploy an Activity Detection Solution using CloudFormation
 
 This is an AWS-based Machine Learning solution to detect an activity in a video segment from a live stream. It is completely deployed using CloudFormation stacks from the given [yaml templates](./cloud_formation). The diagram below shows the AWS services used to implement it and the steps performed to detect an activity from a given video segment.
 
@@ -16,7 +16,7 @@ The AWS Elemental MediaLive livestreaming channel that is created from a sample 
 
 In this example, a sample [Skiing People](https://www.pexels.com/video/people-skiing-857074/) video is used to create the MediaLive livestream channel which is also included in the code repo [here](../videos/PeopleSkiing.mp4). In addition, the deployed model is the I3D model with Resnet50 backbone retrained with UCF101 dataset as explained in this [Jupyter Notebook](../development/SM-transferlearning-UCF101-Inference.ipynb). Autoscaling is enabled for the SageMaker endpoint in order to adjust the number of instances based on the actual workload.
 
-If you want to use it with your own sample video and retrained model, please follow the instructions given in the next section.
+If you want to use the with your own sample video and retrained model, please follow the instructions given in the next section.
 
 ##TODO: Add steps to use your own sample video and retrained model
 
@@ -24,7 +24,7 @@ If you want to use it with your own sample video and retrained model, please fol
 
 1. Ensure that AWS CLI is installed. If not, please install by following [this](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
 
-2. Ensure you have your AWS CLI Profile setup. If not, do as follows. To learn more about configuring AWS CLI, click [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html). In this example, the profile name is `detector` but feel free to use any name:
+2. Ensure you have your AWS CLI profile setup. If not, do as follows. To learn more about configuring AWS CLI, click [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html). In this example, the profile name is `detector` but feel free to use any name:
 
 ![AWS IAM Profile](images/profile.png)
 
