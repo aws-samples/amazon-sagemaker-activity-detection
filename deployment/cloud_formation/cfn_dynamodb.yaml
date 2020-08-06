@@ -5,7 +5,7 @@ Parameters:
     DDBTableName:
         Description: DynamoDB table name
         Type: String
-        Default: "event-detection-table"
+        Default: "activity-detection-table"
 
 Resources:
     DDBTable:

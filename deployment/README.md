@@ -63,7 +63,7 @@ After the solution is deployed, it is time to run it and see its outputs.
 
 ![TS-Formatted Videos](images/s3_ts.png)
 
-3. Each ts-formatted video upload will trigger a lambda function. The lambda function invokes a SageMaker endpoint for activity detection with the S3 pointer as a payload input. The deployed model predicts the event and saves the results into a [DynamoDB table](https://console.aws.amazon.com/dynamodb/) as shown below:
+3. Each ts-formatted video upload will trigger a lambda function. The lambda function invokes a SageMaker endpoint for activity detection with the S3 pointer as a payload input. The deployed model predicts the activity and saves the results into a [DynamoDB table](https://console.aws.amazon.com/dynamodb/) as shown below:
 
 ![DynamoDB Table](images/dynamodb.png)
 

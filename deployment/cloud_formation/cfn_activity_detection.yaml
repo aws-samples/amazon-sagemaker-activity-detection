@@ -1,38 +1,38 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Nested CloudFormation template to create the whole event detection solution.'
+Description: 'Nested CloudFormation template to create the whole activity detection solution.'
 
 Parameters:
     #CreateMediaLiveCFN
     ChannelName:
         Type: String
         Description: MediaLive Channel Name
-        Default: 'event-detection-channel'
+        Default: 'activity-detection-channel'
     InputName:
         Type: String
         Description: MediaLive Channel Input Name
-        Default: 'event-detection-input'
+        Default: 'activity-detection-input'
     InputBucket:
         Type: String
         Description: S3 Bucket where the input code and data are located
-        Default: 'event-data-bucket'
+        Default: 'activity-detection-data-bucket'
     DestinationBucket:
         Type: String
         Description: S3 Bucket where the livestream video chunks are stored 
-        Default: 'event-livestream-bucket'        
+        Default: 'activity-detection-livestream-bucket'        
     #CreateLambdaCFN
     LambdaName:
         Type: String
         Description: Lambda function name
-        Default: 'event-detection-lambda'
+        Default: 'activity-detection-lambda'
     ModelMaxFrames: 
         Type: Number
-        Description: Maximum number of frames used for event detection model
+        Description: Maximum number of frames used for activity detection model
         Default: 32
     #CreateModelCFN
     ModelEndpointName:
         Description: Model endpoint name
         Type: String
-        Default: "event-detection-endpoint"
+        Default: "activity-detection-endpoint"
     InstanceType:
         Description: Instance type
         Type: String
@@ -56,13 +56,13 @@ Parameters:
     DDBTableName:
         Description: DynamoDB table name
         Type: String
-        Default: "event-detection-table"
+        Default: "activity-detection-table"
 
 Resources:
     CreateMediaLiveCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/event-detection/deployment/cloud_formation/cfn_medialive.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/activityt-detection/deployment/cloud_formation/cfn_medialive.yaml"
             Parameters:
                 ChannelName: !Ref ChannelName
                 InputName: !Ref InputName
@@ -71,7 +71,7 @@ Resources:
     CreateLambdaCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/event-detection/deployment/cloud_formation/cfn_lambda.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/activity-detection/deployment/cloud_formation/cfn_lambda.yaml"
             Parameters:
                 LambdaName: !Ref LambdaName
                 LambdaCodeBucket: !Ref InputBucket
@@ -82,7 +82,7 @@ Resources:
     CreateModelCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/event-detection/deployment/cloud_formation/cfn_model.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/activity-detection/deployment/cloud_formation/cfn_model.yaml"
             Parameters:
                 ModelEndpointName: !Ref ModelEndpointName
                 ModelDataBucket: !Ref InputBucket
@@ -92,6 +92,6 @@ Resources:
     CreateDynamoDBCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/event-detection/deployment/cloud_formation/cfn_dynamodb.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/activity-detection/deployment/cloud_formation/cfn_dynamodb.yaml"
             Parameters:
                 DDBTableName: !Ref DDBTableName

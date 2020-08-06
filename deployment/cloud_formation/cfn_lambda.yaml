@@ -5,31 +5,31 @@ Parameters:
     LambdaName:
         Type: String
         Description: Lambda function name
-        Default: 'event-detection-lambda'
+        Default: 'activity-detection-lambda'
 
     LambdaCodeBucket:
         Type: String
         Description: Lambda SourceCode bucket name
-        Default: 'event-data-bucket'
+        Default: 'activity-detection-data-bucket'
 
     TriggerBucketName:
         Type: String
         Description: S3 bucket name used to create a trigger
-        Default: 'event-livestream-bucket'
+        Default: 'activity-detection-livestream-bucket'
         
     DetectionTableName: 
         Type: String
         Description: DynamoDB table to save prediction results
-        Default: "event-detection-table"
+        Default: "activity-detection-table"
 
     EndpointName: 
         Type: String
         Description: SageMaker endpoint for model deployment
-        Default: "event-detection-endpoint"
+        Default: "activity-detection-endpoint"
 
     ModelMaxFrames: 
         Type: Number
-        Description: Maximum number of frames used for event detection model
+        Description: Maximum number of frames used for activity detection model
         Default: 32
         
 Resources:
@@ -41,13 +41,13 @@ Resources:
             Role: !GetAtt LivestreamLambdaRole.Arn
             Code: 
                 S3Bucket: !Sub "${LambdaCodeBucket}-${AWS::Region}-${AWS::AccountId}"
-                S3Key: "event-detection/deployment/lambda/lambda_function.zip"
+                S3Key: "activity-detection/deployment/lambda/lambda_function.zip"
             Handler: lambda_function.lambda_handler
             Timeout: 180
             MemorySize: 1024
             Environment:
                 Variables:
-                    #CLASSES_PATH: !Sub "s3://${LambdaCodeBucket}-${AWS::Region}-${AWS::AccountId}/event-detection/deployment/model/classes.txt"
+                    #CLASSES_PATH: !Sub "s3://${LambdaCodeBucket}-${AWS::Region}-${AWS::AccountId}/activity-detection/deployment/model/classes.txt"
                     DETECTION_TABLE_NAME: !Ref DetectionTableName
                     ENDPOINT_NAME: !Ref EndpointName
                     MODEL_MAX_FRAMES: !Ref ModelMaxFrames

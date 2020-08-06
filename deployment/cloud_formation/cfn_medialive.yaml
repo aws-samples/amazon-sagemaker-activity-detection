@@ -5,19 +5,19 @@ Parameters:
     ChannelName:
         Type: String
         Description: MediaLive Channel Name
-        Default: 'event-detection-channel'
+        Default: 'activity-detection-channel'
     InputName:
         Type: String
         Description: MediaLive Channel Input Name
-        Default: 'event-detection-input'
+        Default: 'activity-detection-input'
     InputVideoBucket:
         Type: String
         Description: S3 Bucket where the input video is located
-        Default: 'event-data-bucket'
+        Default: 'activity-detection-data-bucket'
     DestinationBucket:
         Type: String
         Description: S3 Bucket where the livestream video chunks are stored 
-        Default: 'event-livestream-bucket'
+        Default: 'activity-detection-livestream-bucket'
 
 Resources:
   LivestreamChannel:
@@ -123,7 +123,7 @@ Resources:
       Name: !Ref InputName
       Type: MP4_FILE
       Sources:
-        - Url: !Sub 's3://${InputVideoBucket}-${AWS::Region}-${AWS::AccountId}/event-detection/deployment/PeopleSkiing.mp4'
+        - Url: !Sub 's3://${InputVideoBucket}-${AWS::Region}-${AWS::AccountId}/activity-detection/deployment/PeopleSkiing.mp4'
         
   myMediaLiveAccessRole:
     Type: 'AWS::IAM::Role'

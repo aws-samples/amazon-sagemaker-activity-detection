@@ -5,7 +5,7 @@ Parameters:
     S3BucketName:
         Type: String
         Description: S3 bucket name
-        Default: "event-data-bucket"
+        Default: "activity-detection-data-bucket"
         
 Resources:
     MyBucket:

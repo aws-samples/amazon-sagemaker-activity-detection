@@ -1,8 +1,8 @@
 #!/bin/sh 
 
-# This script creates all the cloudformation stacks related to the event-detection architecture.
+# This script creates all the cloudformation stacks related to the activity-detection architecture.
 
-echo "[START] LAUNCHING the event-detection solution..."
+echo "[START] LAUNCHING the activity-detection solution..."
 
 read -p "Enter your AWS IAM profile: " profile
 
@@ -16,20 +16,20 @@ cfn_lambda="CreateLambdaCFN"
 cfn_model="CreateModelCFN"
 cfn_dynamodb="CreateDynamoDBCFN"
 
-bucket_input="event-data-bucket"
-bucket_livestream="event-livestream-bucket"
+bucket_input="activity-detection-data-bucket"
+bucket_livestream="activity-detection-livestream-bucket"
 
-medialive_channel="event-detection-channel"
-medialive_input="event-detection-input"
+medialive_channel="activity-detection-channel"
+medialive_input="activity-detection-input"
 
-lambda_name="event-detection-lambda"
+lambda_name="activity-detection-lambda"
 
-detection_table_name="event-detection-table"
+detection_table_name="activity-detection-table"
 
-endpoint_name="event-detection-endpoint"
+endpoint_name="activity-detection-endpoint"
 model_max_frames=32
 
-s3_data_path="s3://${bucket_input}-${region}-${account}/event-detection/deployment/"
+s3_data_path="s3://${bucket_input}-${region}-${account}/activity-detection/deployment/"
 echo "Creating input bucket ${bucket_input}-${region}-${account}..."
 aws cloudformation create-stack --stack-name ${cfn_bucket} --template-body file://cloud_formation/cfn_bucket.yaml --parameters  ParameterKey=S3BucketName,ParameterValue=${bucket_input} --profile ${profile}
 
@@ -71,4 +71,4 @@ aws cloudformation create-stack --stack-name ${cfn_model} --template-body file:/
 echo "Creating the dynamodb table ${detection_table_name} ..."
 aws cloudformation create-stack --stack-name ${cfn_dynamodb} --template-body file://cloud_formation/cfn_dynamodb.yaml --parameters ParameterKey=DDBTableName,ParameterValue=${detection_table_name} --profile ${profile}
 
-echo "[SUCCESS] DONE BUILDING the event-detection solution!! Please check if all the CloudFormation stacks are successfully created."
+echo "[SUCCESS] DONE BUILDING the activity-detection solution!! Please check if all the CloudFormation stacks are successfully created."

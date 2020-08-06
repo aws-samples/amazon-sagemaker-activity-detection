@@ -1,8 +1,8 @@
 #!/bin/sh 
 
-# This script cleans up all the cloudformation stacks related to the event-detection architecture.
+# This script cleans up all the cloudformation stacks related to the activity detection architecture.
 
-echo "[START] DELETING the event-detection solution..."
+echo "[START] DELETING the activity detection solution..."
 
 read -p "Please STOP the MediaLive Channel first!! If YES, press ENTER to continue..."
 
@@ -18,8 +18,8 @@ cfn_lambda="CreateLambdaCFN"
 cfn_model="CreateModelCFN"
 cfn_dynamodb="CreateDynamoDBCFN"
 
-bucket_input="event-data-bucket-${region}-${account}"
-bucket_livestream="event-livestream-bucket-${region}-${account}"
+bucket_input="activity-detection-data-bucket-${region}-${account}"
+bucket_livestream="activity-detection-livestream-bucket-${region}-${account}"
 
 ##Separated in different bash file
 echo "Cleaning up all the AWS resources used in deploying the architecture..."
@@ -47,4 +47,4 @@ aws cloudformation delete-stack --stack-name ${cfn_dynamodb} --profile ${profile
 echo "Deleting the bucket stack ${cfn_bucket}..."
 aws cloudformation delete-stack --stack-name ${cfn_bucket} --profile ${profile}
 
-echo "[SUCCESS] DONE DELETING the event-detection solution!!"
+echo "[SUCCESS] DONE DELETING the activity-detection solution!!"
