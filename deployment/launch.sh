@@ -39,7 +39,8 @@ echo "Copying source code and data into ${bucket_input}-${region}-${account}..."
 
 #Prepare the files
 if [ ! -f PeopleSkiing.mp4 ]; then
-    cp ../PeopleSkiing.mp4 .
+    cp ../videos/PeopleSkiing.mp4 .
+fi
 
 if [ -f lambda/lambda_function.zip ]; then
     rm lambda/lambda_function.zip
@@ -49,10 +50,10 @@ zip lambda/lambda_function.zip -j lambda/lambda_function.py
 if [ -f model/model.tar.gz ]; then
     rm model/model.tar.gz
 fi
-tar -czvf model/model.tar.gz -C model/ . 
+tar -czvf model/model.tar.gz --exclude=".ipynb_checkpoints" -C model/ . 
 
 #Copy all the files into the S3
-aws s3 cp --recursive . "${s3_data_path}"
+aws s3 cp . "${s3_data_path}" --recursive --exclude "*.ipynb_checkpoints/*"
 
 #Remove the extra files from the copy
 rm PeopleSkiing.mp4
