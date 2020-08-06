@@ -123,7 +123,7 @@ Resources:
       Name: !Ref InputName
       Type: MP4_FILE
       Sources:
-        - Url: !Sub 's3://${InputVideoBucket}-${AWS::Region}-${AWS::AccountId}/activity-detection/deployment/PeopleSkiing.mp4'
+        - Url: !Sub 's3://${InputVideoBucket}-${AWS::Region}-${AWS::AccountId}/amazon-sagemaker-activity-detection/deployment/PeopleSkiing.mp4'
         
   myMediaLiveAccessRole:
     Type: 'AWS::IAM::Role'

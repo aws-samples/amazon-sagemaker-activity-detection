@@ -50,14 +50,14 @@ Resources:
                 - 
                     ContainerHostname : MxnetContainer
                     Image: !Sub "763104351884.dkr.ecr.${AWS::Region}.amazonaws.com/mxnet-inference:1.6.0-gpu-py3"
-                    ModelDataUrl: !Sub "s3://${ModelDataBucket}-${AWS::Region}-${AWS::AccountId}/activity-detection/deployment/model/model.tar.gz"
+                    ModelDataUrl: !Sub "s3://${ModelDataBucket}-${AWS::Region}-${AWS::AccountId}/amazon-sagemaker-activity-detection/deployment/model/model.tar.gz"
                     Environment: {
                         "SAGEMAKER_MODEL_SERVER_WORKERS": 10,
                         "SAGEMAKER_ENABLE_CLOUDWATCH_METRICS": true,
                         "SAGEMAKER_REGION": {"Ref": "AWS::Region"},
                         "SAGEMAKER_PROGRAM": "inference.py",
                         "SAGEMAKER_CONTAINER_LOG_LEVEL": 20,
-                        "SAGEMAKER_SUBMIT_DIRECTORY": !Sub "s3://${ModelDataBucket}-${AWS::Region}-${AWS::AccountId}/activity-detection/deployment/model/model.tar.gz",
+                        "SAGEMAKER_SUBMIT_DIRECTORY": !Sub "s3://${ModelDataBucket}-${AWS::Region}-${AWS::AccountId}/amazon-sagemaker-activity-detection/deployment/model/model.tar.gz",
                     }
             ExecutionRoleArn: !GetAtt SageMakerExecutionRole.Arn
             ModelName: !Ref ModelEndpointName

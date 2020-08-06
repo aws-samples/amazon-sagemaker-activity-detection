@@ -41,13 +41,12 @@ Resources:
             Role: !GetAtt LivestreamLambdaRole.Arn
             Code: 
                 S3Bucket: !Sub "${LambdaCodeBucket}-${AWS::Region}-${AWS::AccountId}"
-                S3Key: "activity-detection/deployment/lambda/lambda_function.zip"
+                S3Key: "amazon-sagemaker-activity-detection/deployment/lambda/lambda_function.zip"
             Handler: lambda_function.lambda_handler
             Timeout: 180
             MemorySize: 1024
             Environment:
                 Variables:
-                    #CLASSES_PATH: !Sub "s3://${LambdaCodeBucket}-${AWS::Region}-${AWS::AccountId}/activity-detection/deployment/model/classes.txt"
                     DETECTION_TABLE_NAME: !Ref DetectionTableName
                     ENDPOINT_NAME: !Ref EndpointName
                     MODEL_MAX_FRAMES: !Ref ModelMaxFrames

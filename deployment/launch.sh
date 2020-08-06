@@ -29,7 +29,7 @@ detection_table_name="activity-detection-table"
 endpoint_name="activity-detection-endpoint"
 model_max_frames=32
 
-s3_data_path="s3://${bucket_input}-${region}-${account}/activity-detection/deployment/"
+s3_data_path="s3://${bucket_input}-${region}-${account}/amazon-sagemaker-activity-detection/deployment/"
 echo "Creating input bucket ${bucket_input}-${region}-${account}..."
 aws cloudformation create-stack --stack-name ${cfn_bucket} --template-body file://cloud_formation/cfn_bucket.yaml --parameters  ParameterKey=S3BucketName,ParameterValue=${bucket_input} --profile ${profile}
 
