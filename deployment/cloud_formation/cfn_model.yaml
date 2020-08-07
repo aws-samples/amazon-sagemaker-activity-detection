@@ -7,7 +7,7 @@ Parameters:
         Type: String
         Default: "activity-detection-endpoint"
     ModelDataBucket:
-        Description: S3 Bucket location of model artefact
+        Description: "S3 Bucket location of model artefacts. (Note: AWS Region name and Account ID are automatically added as suffices of the bucket name)"
         Type: String
         Default: "activity-detection-data-bucket"
     InstanceType:
@@ -24,11 +24,11 @@ Parameters:
     MinInstanceCount:
         Description: Minimum number of instances created
         Type: String
-        Default: 1
+        Default: '1'
     MaxInstanceCount:
         Description: Maximum number of instances created during autoscaling
         Type: String
-        Default: 3
+        Default: '3'
     VariantName:
         Description: The name of the production variant.
         Type: String
@@ -39,7 +39,7 @@ Parameters:
         Description: The amount of time, in seconds, after a scaling activity completes before any further trigger-related scaling activities can start
     SageMakerVariantInvocationsPerInstance:
         Type: Number
-        Default: '100'
+        Default: '1'
         Description: SageMakerVariantInvocationsPerInstance is the average number of times per minute that each instance for a variant is invoked
 
 Resources:

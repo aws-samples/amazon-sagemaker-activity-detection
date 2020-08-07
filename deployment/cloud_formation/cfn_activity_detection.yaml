@@ -2,7 +2,15 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Nested CloudFormation template to create the whole activity detection solution.'
 
 Parameters:
-    #CreateMediaLiveCFN
+    #MediaLiveCFN
+    InputBucket:
+        Type: String
+        Description: "S3 Bucket where the input code and data are located. (Note: AWS Region name and Account ID are automatically added as suffices of the bucket name)"
+        Default: 'activity-detection-data-bucket'
+    DestinationBucket:
+        Type: String
+        Description: "S3 Bucket where the livestream video segments are stored. (Note: AWS Region name and Account ID are automatically added as suffices of the bucket name)"
+        Default: 'activity-detection-livestream-bucket'        
     ChannelName:
         Type: String
         Description: MediaLive Channel Name
@@ -11,15 +19,7 @@ Parameters:
         Type: String
         Description: MediaLive Channel Input Name
         Default: 'activity-detection-input'
-    InputBucket:
-        Type: String
-        Description: S3 Bucket where the input code and data are located
-        Default: 'activity-detection-data-bucket'
-    DestinationBucket:
-        Type: String
-        Description: S3 Bucket where the livestream video chunks are stored 
-        Default: 'activity-detection-livestream-bucket'        
-    #CreateLambdaCFN
+    #LambdaCFN
     LambdaName:
         Type: String
         Description: Lambda function name
@@ -28,7 +28,7 @@ Parameters:
         Type: Number
         Description: Maximum number of frames used for activity detection model
         Default: 32
-    #CreateModelCFN
+    #ModelCFN
     ModelEndpointName:
         Description: Model endpoint name
         Type: String
@@ -52,23 +52,23 @@ Parameters:
         Description: Maximum number of instances created during autoscaling
         Type: String
         Default: 3
-    ##CreateDynamoDBCFN
+    ##DynamoDBCFN
     DDBTableName:
         Description: DynamoDB table name
         Type: String
         Default: "activity-detection-table"
 
 Resources:
-    CreateMediaLiveCFN:
+    MediaLiveCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/activityt-detection/deployment/cloud_formation/cfn_medialive.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_medialive.yaml"
             Parameters:
                 ChannelName: !Ref ChannelName
                 InputName: !Ref InputName
                 InputVideoBucket: !Ref InputBucket
                 DestinationBucket: !Ref DestinationBucket
-    CreateLambdaCFN:
+    LambdaCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_lambda.yaml"
@@ -79,7 +79,7 @@ Resources:
                 DetectionTableName: !Ref DDBTableName
                 EndpointName: !Ref ModelEndpointName
                 ModelMaxFrames: !Ref ModelMaxFrames
-    CreateModelCFN:
+    ModelCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_model.yaml"
@@ -89,7 +89,7 @@ Resources:
                 InstanceType: !Ref InstanceType
                 MinInstanceCount: !Ref MinInstanceCount
                 MaxInstanceCount: !Ref MaxInstanceCount
-    CreateDynamoDBCFN:
+    DynamoDBCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_dynamodb.yaml"

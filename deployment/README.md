@@ -16,7 +16,7 @@ The AWS Elemental MediaLive livestreaming channel that is created from a sample 
 
 In this example, a sample [Skiing People](https://www.pexels.com/video/people-skiing-857074/) video is used to create the MediaLive livestream channel which is also included in the code repo [here](../videos/PeopleSkiing.mp4). In addition, the deployed model is the I3D model with Resnet50 backbone retrained with UCF101 dataset as explained in this [Jupyter Notebook](../development/SM-transferlearning-UCF101-Inference.ipynb). Autoscaling is enabled for the SageMaker endpoint in order to adjust the number of instances based on the actual workload.
 
-If you want to use the with your own sample video and retrained model, please follow the instructions given in the next section.
+If you want to use the solution with your own sample video and retrained model, please follow the instructions given in the next section.
 
 ##TODO: Add steps to use your own sample video and retrained model
 
@@ -30,9 +30,9 @@ If you want to use the with your own sample video and retrained model, please fo
 
 ## Deploying the Solution
 
-NOTE: There is a cost associated with the deployment and running of the solution. Please remember to delete all the AWS CloudFormation stacks when you are done with it to avoid additional charges. The steps to delete it is given in the next section.
+NOTE: There is a cost associated with the deployment and running of the solution. Please remember to delete all the AWS CloudFormation stacks when you are done with it to avoid additional charges. The steps to delete it is given in the next section. To estimate the cost associated with deploying and running it, please refer to the "cost estimation" section of this [blog post](#).
 
-To deploy the solution, `launch.sh` shell script is used. It provides a step-by-step commands and instructions. Run the script and follow the given instructions. All the AWS services are created by using [CloudFormation Stacks](https://console.aws.amazon.com/cloudformation/). After the stacks are created, please make sure they are created successfully by going to the [CloudFormation Console](https://console.aws.amazon.com/cloudformation/). Note that, at the beginning, it will ask you to provide the profile name. Provide the profile name you created in the previous section.
+To deploy the solution, `launch.sh` shell script is used. It provides a step-by-step commands and instructions. Run the script and follow the given instructions. All the AWS services are created by using [CloudFormation Stacks](https://console.aws.amazon.com/cloudformation/). After the stacks are created, please make sure they are created successfully by going to the [CloudFormation Console](https://console.aws.amazon.com/cloudformation/). Note that, at the beginning, it will ask you to provide the profile name. Provide the profile name you created in the previous section. It will take 15-20 minutes to deploy the architecture.
 
 Before running `launch.sh`, ensure that it is executable. Run the following commands:
 
@@ -43,13 +43,23 @@ chmod +x launch.sh
 
 ![Launching](images/launch.png)
 
-Once you successfully run the `launch.sh`, you will be able to create all the AWS resources used in the solution. When you go to your [CloudFormation Console](https://console.aws.amazon.com/cloudformation/), you will see all the stacks that are successfully created. You should get the same as shown below:
+Once you successfully run the `launch.sh`, you will be able to create all the AWS resources used in the solution. When you go to your [CloudFormation Console](https://console.aws.amazon.com/cloudformation/), you will see all the stacks that are successfully created. You should get similar to the one shown below:
 
 ![CloudFormation Stacks](images/stacks.png)
 
-##TODO: Change the screenshot is the root stack is used.
-
 If you get all the stacks created with status `CREATE_COMPLETE`, CONGRATULATIONS!! You have successfully deployed the end-to-end solution.
+
+Once it is successfully deployed, the following AWS resources are created:
+
+* Two S3 Buckets
+    * The first one is to store the source code, CloudFormation templates, model articats, etc.
+    * The other is to store the video segments generated from the MediaLive livestreaming channel.
+* MediaLive Channel - To create the video segments from livestream channel.
+* Lambda Function - To invoke the SageMaker endpoint to detect activities for each video segment.
+* SageMaker Endpoint - To load a video segment, detect an activity and save the results into DynamoDB table.
+* DynamoDB Table - To store the prediction results.
+
+Note: IAM roles are also created to provide permissions to their respective resources
 
 ## Using the Solution
 
@@ -59,7 +69,7 @@ After the solution is deployed, it is time to run it and see its outputs.
 
 ![MediaLive Channel](images/medialive.png)
 
-2. Once the channel state is changed to `Running`, ts-formatted video segments will be saved into the the livestream [S3 bucket](https://console.aws.amazon.com/s3/) as follows:
+2. Once the channel state is changed to `Running`, ts-formatted video segments will be saved into the the livestream [S3 bucket](https://console.aws.amazon.com/s3/) as shown below. Please note that only the latest 21 video segments are kept in the S3 bucket to save storage. However, if you want to increase the number of segments to be stored, you can go to the [MediaLive template](./cloud_formation/cfn_medialive.yaml) and change the `keepsegments` key before you deploy the solution.
 
 ![TS-Formatted Videos](images/s3_ts.png)
 
@@ -78,5 +88,5 @@ chmod +x cleanup.sh
 
 ![Deleting AWS Resources](images/cleanup.png)
 
-Once you ran the script successfully, please go to your [CloudFormation Console](https://console.aws.amazon.com/cloudformation/) and make sure that all the created stacks are deleted properly. If so, CONGRATULATIONS!! You have successfully deleted all the AWS resources associated with the solution.
+Once you ran the script successfully, please go to your [CloudFormation Console](https://console.aws.amazon.com/cloudformation/) and make sure that all the stacks are deleted properly. If so, CONGRATULATIONS!! You have successfully deleted all the AWS resources associated with the solution.
 

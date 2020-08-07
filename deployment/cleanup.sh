@@ -2,49 +2,56 @@
 
 # This script cleans up all the cloudformation stacks related to the activity detection architecture.
 
-echo "[START] DELETING the activity detection solution..."
+echo "[START] DELETING the Activity Detection Solution..."
 
-read -p "Please STOP the MediaLive Channel first!! If YES, press ENTER to continue..."
+read -p "Please STOP the MediaLive Channel First!! If YES, press ENTER to continue..."
 
 read -p "Enter your AWS IAM profile: " profile
 
+#AWS Account ID and Region Name
 account=$(aws sts get-caller-identity --query Account --output text --profile ${profile})
 region=$(aws configure get region --profile ${profile})
-echo "We will be launching resources in ${region} in account ${account} with AWS CLI Profile ${profile}."
 
-cfn_bucket="CreateInputBucketCFN"
-cfn_medialive="CreateMediaLiveCFN"
-cfn_lambda="CreateLambdaCFN"
-cfn_model="CreateModelCFN"
-cfn_dynamodb="CreateDynamoDBCFN"
+#CloudFormation for Input S3 Bucket
+cfn_bucket="InputBucketCFN"
+#CloudFormation for the Activity Detection Solution 
+cfn_activity="ActivityDetectionCFN"
 
 bucket_input="activity-detection-data-bucket-${region}-${account}"
 bucket_livestream="activity-detection-livestream-bucket-${region}-${account}"
 
-##Separated in different bash file
-echo "Cleaning up all the AWS resources used in deploying the architecture..."
+#Function to wait until the cloudformation is fully created
+wait_until_completion()
+{
+  echo "Waiting for the Deletion of $1..."
+  completed=false
+  while [ ${completed} = false ]
+  do
+    sleep 10s
+    stack_status=$(aws cloudformation describe-stacks --stack-name $1)
+    if [[ -z ${stack_status} ]]; then
+      echo "$1 Successfully Deleted!"
+      completed=true
+    fi
+  done
+}
 
-echo "Deleting S3 bucket ${bucket_input}..."
+echo "Deleting the Input S3 bucket ${bucket_input}..."
 aws s3 rb s3://${bucket_input}  --force --profile ${profile}
 
-#echo "Deleting all contents of ${bucket_livestream}..."
-aws s3 rb s3://${bucket_livestream} --force --profile ${profile}
-
-read -p "Check if the S3 buckets ${bucket_input} and ${bucket_livestream} are completely Deleted! If YES, press ENTER to continue..."
-
-echo "Deleting the model endpoint stack ${cfn_model}..."
-aws cloudformation delete-stack --stack-name ${cfn_model} --profile ${profile}
-
-echo "Deleting the lambda function stack ${cfn_lambda}..."
-aws cloudformation delete-stack --stack-name ${cfn_lambda} --profile ${profile}
-
-echo "Deleting the medialive stack ${cfn_medialive}..."
-aws cloudformation delete-stack --stack-name ${cfn_medialive} --profile ${profile}
-
-echo "Deleting the dynamodb stack ${cfn_dynamodb}..."
-aws cloudformation delete-stack --stack-name ${cfn_dynamodb} --profile ${profile}
-
-echo "Deleting the bucket stack ${cfn_bucket}..."
+echo "Deleting the Input Bucket CloudFormation Stack ${cfn_bucket}..."
 aws cloudformation delete-stack --stack-name ${cfn_bucket} --profile ${profile}
 
-echo "[SUCCESS] DONE DELETING the activity-detection solution!!"
+#Wait until the input bucket cloudformation stack is successfully deleted
+wait_until_completion ${cfn_bucket}
+
+echo "Deleting the Livestream S3 bucket ${bucket_livestream}..."
+aws s3 rb s3://${bucket_livestream} --force --profile ${profile}
+
+echo "Deleting the Activity Detection CloudFormation Stack ${cfn_activity}..."
+aws cloudformation delete-stack --stack-name ${cfn_activity} --profile ${profile}
+
+#Wait until the activity detection cloudformation stack is successfully deleted
+wait_until_completion ${cfn_activity}
+
+echo "[SUCCESS] DONE DELETING the Activity Detection Solution!!"

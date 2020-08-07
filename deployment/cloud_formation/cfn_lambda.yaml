@@ -9,7 +9,7 @@ Parameters:
 
     LambdaCodeBucket:
         Type: String
-        Description: Lambda SourceCode bucket name
+        Description: "Lambda SourceCode bucket name. (Note: AWS Region name and Account ID are automatically added as suffices of the bucket name)"
         Default: 'activity-detection-data-bucket'
 
     TriggerBucketName:

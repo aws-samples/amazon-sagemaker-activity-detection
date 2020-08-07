@@ -12,7 +12,7 @@ Parameters:
         Default: 'activity-detection-input'
     InputVideoBucket:
         Type: String
-        Description: S3 Bucket where the input video is located
+        Description: "S3 Bucket where the input video is located. (Note: AWS Region name and Account ID are automatically added as suffices of the bucket name)"
         Default: 'activity-detection-data-bucket'
     DestinationBucket:
         Type: String
