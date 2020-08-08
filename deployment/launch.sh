@@ -21,7 +21,7 @@ cfn_activity="ActivityDetectionCFN"
 #Input S3 bucket name where all the cloudformation templates and model artifacts are stored
 bucket_input="activity-detection-data-bucket"
 #S3 path where the templates & model artifacts are saved
-s3_data_path="s3://${bucket_input}-${region}-${account}/amazon-sagemaker-activity-detection/deployment/"
+s3_data_path="s3://${bucket_input}-${region}-${account}/artifacts/amazon-sagemaker-activity-detection/deployment"
 
 #Bucket name where the video segments from livestream are stored
 bucket_livestream="activity-detection-livestream-bucket"
@@ -50,10 +50,7 @@ detection_table_name="activity-detection-table"
 
 ############ [END] PARAMETERS VALUES THAT CAN BE CHANGED #############
 
-echo "Creating input bucket ${bucket_input}-${region}-${account}..."
-aws cloudformation create-stack --stack-name ${cfn_bucket} --template-body file://cloud_formation/cfn_bucket.yaml --parameters  ParameterKey=S3BucketName,ParameterValue=${bucket_input} --profile ${profile}
-
-#Function to wait until the cloudformation is fully created
+#Function to wait until a cloudformation is fully created
 wait_until_completion()
 {
   echo "Waiting for the Creation of $1..."
@@ -71,6 +68,9 @@ wait_until_completion()
     fi
   done
 }
+
+echo "Creating input bucket ${bucket_input}-${region}-${account}..."
+aws cloudformation create-stack --stack-name ${cfn_bucket} --template-body file://cloud_formation/cfn_bucket.yaml --parameters  ParameterKey=S3BucketName,ParameterValue=${bucket_input} --profile ${profile}
 
 #Wait until the input bucket & its cloudformation stack is successfully created
 wait_until_completion ${cfn_bucket}
@@ -92,7 +92,11 @@ fi
 tar -czf model/model.tar.gz --exclude=".ipynb_checkpoints" -C model/ . 
 
 #Copy all the files into the S3 (exclude ipynb_checkpoints)
-aws s3 cp . ${s3_data_path} --recursive --quiet --exclude "*.ipynb_checkpoints/*"
+#aws s3 cp . ${s3_data_path} --recursive --quiet --exclude "*.ipynb_checkpoints/*"
+aws s3 cp "cloud_formation/" "${s3_data_path}/cloud_formation/" --recursive --quiet --exclude "*.ipynb_checkpoints/*"
+aws s3 cp "lambda/" "${s3_data_path}/lambda/" --recursive --quiet --exclude "*.ipynb_checkpoints/*"
+aws s3 cp "model/" "${s3_data_path}/model/" --recursive --quiet --exclude "*.ipynb_checkpoints/*"
+aws s3 cp PeopleSkiing.mp4 "${s3_data_path}/" --quiet
 
 #Remove the extra files from the copy
 rm PeopleSkiing.mp4

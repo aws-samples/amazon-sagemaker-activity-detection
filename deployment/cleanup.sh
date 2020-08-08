@@ -20,7 +20,7 @@ cfn_activity="ActivityDetectionCFN"
 bucket_input="activity-detection-data-bucket-${region}-${account}"
 bucket_livestream="activity-detection-livestream-bucket-${region}-${account}"
 
-#Function to wait until the cloudformation is fully created
+#Function to wait until a cloudformation is fully created
 wait_until_completion()
 {
   echo "Waiting for the Deletion of $1..."

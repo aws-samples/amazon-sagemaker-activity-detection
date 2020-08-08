@@ -12,7 +12,7 @@ Parameters:
         Default: 'activity-detection-input'
     InputVideoBucket:
         Type: String
-        Description: "S3 Bucket where the input video is located. (Note: AWS Region name and Account ID are automatically added as suffices of the bucket name)"
+        Description: "S3 Bucket where the input video is located."
         Default: 'activity-detection-data-bucket'
     DestinationBucket:
         Type: String
@@ -40,7 +40,7 @@ Resources:
       Destinations:
         - Id: DestinationUrl
           Settings:
-            - Url: !Sub "s3://${DestinationBucket}-${AWS::Region}-${AWS::AccountId}/livestream_pipe/channel"
+            - Url: !Sub "s3://${DestinationBucket}/livestream_pipe/channel"
       EncoderSettings:
         AudioDescriptions:
           - AudioTypeControl: FOLLOW_INPUT
@@ -123,7 +123,7 @@ Resources:
       Name: !Ref InputName
       Type: MP4_FILE
       Sources:
-        - Url: !Sub 's3://${InputVideoBucket}-${AWS::Region}-${AWS::AccountId}/amazon-sagemaker-activity-detection/deployment/PeopleSkiing.mp4'
+        - Url: !Sub 's3://${InputVideoBucket}/artifacts/amazon-sagemaker-activity-detection/deployment/PeopleSkiing.mp4'
         
   myMediaLiveAccessRole:
     Type: 'AWS::IAM::Role'
