@@ -14,7 +14,7 @@ Parameters:
 
     TriggerBucketName:
         Type: String
-        Description: S3 bucket name used to create a trigger
+        Description: "S3 bucket name used to create a trigger. (Note: AWS Region name and Account ID are automatically added as suffices of the bucket name)"
         Default: 'activity-detection-livestream-bucket'
         
     DetectionTableName: 
