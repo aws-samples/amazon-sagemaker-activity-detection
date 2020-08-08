@@ -62,36 +62,36 @@ Resources:
     MediaLiveCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_medialive.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/artifacts/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_medialive.yaml"
             Parameters:
                 ChannelName: !Ref ChannelName
                 InputName: !Ref InputName
-                InputVideoBucket: !Ref InputBucket
-                DestinationBucket: !Ref DestinationBucket
+                InputVideoBucket: !Sub "${InputBucket}-${AWS::Region}-${AWS::AccountId}"
+                DestinationBucket: !Sub "${DestinationBucket}-${AWS::Region}-${AWS::AccountId}"
     LambdaCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_lambda.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/artifacts/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_lambda.yaml"
             Parameters:
                 LambdaName: !Ref LambdaName
-                LambdaCodeBucket: !Ref InputBucket
-                TriggerBucketName: !Ref DestinationBucket
+                LambdaCodeBucket: !Sub "${InputBucket}-${AWS::Region}-${AWS::AccountId}"
+                TriggerBucketName: !Sub "${DestinationBucket}-${AWS::Region}-${AWS::AccountId}"
                 DetectionTableName: !Ref DDBTableName
                 EndpointName: !Ref ModelEndpointName
                 ModelMaxFrames: !Ref ModelMaxFrames
     ModelCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_model.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/artifacts/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_model.yaml"
             Parameters:
                 ModelEndpointName: !Ref ModelEndpointName
-                ModelDataBucket: !Ref InputBucket
+                ModelDataBucket: !Sub "${InputBucket}-${AWS::Region}-${AWS::AccountId}"
                 InstanceType: !Ref InstanceType
                 MinInstanceCount: !Ref MinInstanceCount
                 MaxInstanceCount: !Ref MaxInstanceCount
     DynamoDBCFN:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_dynamodb.yaml"
+            TemplateURL: !Sub "https://${InputBucket}-${AWS::Region}-${AWS::AccountId}.s3-${AWS::Region}.amazonaws.com/artifacts/amazon-sagemaker-activity-detection/deployment/cloud_formation/cfn_dynamodb.yaml"
             Parameters:
                 DDBTableName: !Ref DDBTableName
