@@ -6,7 +6,7 @@ This code repository contains two parts:
 
 2. [Deployment](./deployment): It contains CloudFormation templates and other resources to deploy an end-to-end activity detection solution using CloudFormation
 
-A blogpost associated with the code repository is found [here](#).
+A blog post associated with the code repository is found [here](#).
 
 ##TODO: Update the link once the blogpost is up and running
 
