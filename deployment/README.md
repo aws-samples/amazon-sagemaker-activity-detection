@@ -95,10 +95,12 @@ In order to deploy the activity detection solution with your own retrained model
 
 1. Untar your model artifacts.
 2. Replace `mode/model-0000.params` and `model/model-symbol.json` with your own.
-3. Replace the `model/classes.txt` with your own list of classes file.
+3. Replace `model/classes.txt` with your own list of classes file.
 4. If you want to use your own sample video for live stream, do as follows, otherwise skip to step 5.
-    a. Copy your video into the [videos directory](../videos).
-    b. Open `launch.sh` script and update the `video_fname` variable with the filename of your video. 
+
+    - Copy your video into the [videos directory](../videos).
+    - Open `launch.sh` script and update the `video_fname` variable with the filename of your video. 
+
 5 Deploy the solution by running `launch.sh`
 
-Note: the steps above supports only for the I3D model archicture as explained in this [Jupyter Notebook](../development/SM-transferlearning-UCF101-Inference.ipynb). If you trained a different model architecture, you will need to modify the [inference code](model/code/inference.py).
+Note: the steps above supports only for the I3D model archicture as explained in this [Jupyter Notebook](../development/SM-transferlearning-UCF101-Inference.ipynb). If you want to use a different model architecture, you will need to modify the [inference code](model/code/inference.py).
