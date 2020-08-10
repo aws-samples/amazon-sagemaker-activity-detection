@@ -51,17 +51,16 @@ Once you successfully run the `launch.sh`, you will be able to create all the AW
 
 If you get all the stacks created with status `CREATE_COMPLETE`, CONGRATULATIONS!! You have successfully deployed the end-to-end solution.
 
-Once it is successfully deployed, the following AWS resources are created:
+Once the solution is successfully deployed, the following AWS resources are created:
 
-* Two S3 Buckets
-    * The first one is to store the source code, CloudFormation templates, model articats, etc.
-    * The other is to store the video segments generated from the MediaLive livestreaming channel.
-* MediaLive Channel - To create the video segments from livestream channel.
-* Lambda Function - To invoke the SageMaker endpoint to detect activities for each video segment.
-* SageMaker Endpoint - To load a video segment, detect an activity and save the results into DynamoDB table.
-* DynamoDB Table - To store the prediction results.
+* S3 Bucket (default name: `activity-detection-data-bucket-<aws-region>-<account-id>`)- stores the CloudFormation templates, sample video and model artifacts.
+* S3 Bucket (default name: `activity-detection-livestream-bucket-<aws-region>-<account-id>`)- stores video segments from the live video stream.
+* MediaLive Channel (default name: `activity-detection-channel`)- creates video segments from the live video stream and saves them to the S3 bucket.
+* ambda Function (default name: `activity-detection-lambda`) - Invokes the SageMaker endpoint to detect activities from each video segment.
+* SageMaker Endpoint (default name: `activity-detection-endpoint`) - Loads a video segment, detects an activity and saves the results into a DynamoDB table.
+* DynamoDB Table (default name: `activity-detection-table`) - Stores the prediction results from the endpoint.
 
-Note: IAM roles are also created to provide permissions to their respective resources
+Please note that some other supporting resources, like IAM roles, are also created to provide permissions to their respective resources.
 
 ## Using the Solution
 
