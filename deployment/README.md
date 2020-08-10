@@ -16,9 +16,7 @@ The AWS Elemental MediaLive livestreaming channel that is created from a sample 
 
 In this example, a sample [Skiing People](https://www.pexels.com/video/people-skiing-857074/) video is used to create the MediaLive livestream channel which is also included in the [code repo](../videos/PeopleSkiing.mp4). In addition, the deployed model is the I3D model with Resnet50 backbone retrained with UCF101 dataset as explained in this [Jupyter Notebook](../development/SM-transferlearning-UCF101-Inference.ipynb). Autoscaling is enabled for the SageMaker endpoint in order to adjust the number of instances based on the actual workload.
 
-If you want to use the solution with your own sample video and retrained model, please follow the instructions given in the next section.
-
-##TODO: Add steps to use your own sample video and retrained model
+If you want to use the solution with your own sample video and retrained model, please follow the instructions provided in the next section.
 
 ## Prerequisites
 
@@ -90,3 +88,17 @@ chmod +x cleanup.sh
 ![Deleting AWS Resources](images/cleanup.png)
 
 Once you ran the script successfully, go to your [CloudFormation Console](https://console.aws.amazon.com/cloudformation/) and make sure that all the stacks are deleted properly. If so, CONGRATULATIONS!! You have successfully deleted all the AWS resources associated with the solution.
+
+## Using the Solution with your Own Model and Sample Video
+
+In order to deploy the activity detection solution with your own retrained model, please follow the steps below:
+
+1. Untar your model artifacts.
+2. Replace `mode/model-0000.params` and `model/model-symbol.json` with your own.
+3. Replace the `model/classes.txt` with your own list of classes file.
+4. If you want to use your own sample video for live stream, do as follows, otherwise skip to step 5.
+    a. Copy your video into the [videos directory](../videos).
+    b. Open `launch.sh` script and update the `video_fname` variable with the filename of your video. 
+5 Deploy the solution by running `launch.sh`
+
+Note: the steps above supports only for the I3D model archicture as explained in this [Jupyter Notebook](../development/SM-transferlearning-UCF101-Inference.ipynb). If you trained a different model architecture, you will need to modify the [inference code](model/code/inference.py).
