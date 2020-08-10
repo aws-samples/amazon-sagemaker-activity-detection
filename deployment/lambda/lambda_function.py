@@ -23,7 +23,6 @@ def lambda_handler(event, context):
         s3_video_path = os.path.join('s3://' + bucket_in, key_in)
         prefix, infile = key_in.split('/', 1)
         s3_client.download_file(bucket_in, key_in,'/tmp/'+infile)
-        print('input:', s3_video_path)
         subprocess.run(['rm', '/tmp/'+infile])
 
         data = {}

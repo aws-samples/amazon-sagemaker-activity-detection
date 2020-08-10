@@ -59,19 +59,16 @@ def transform_fn(net, data,input_content_type, output_content_type):
     
     start = time.time()
     video_data = read_video_data(data['S3_VIDEO_PATH'], data['MODEL_MAX_FRAMES'])
-    print('Loading video time={}'.format(time.time()-start))
     
     ctx = mx.gpu() if mx.context.num_gpus() else mx.cpu()
     video_input = video_data.as_in_context(ctx)
     
     start = time.time()
     probs = net(video_input.astype('float32', copy=False))
-    print('Getting predictions time={}'.format(time.time()-start))
     
     start = time.time()
     predicted = mx.nd.argmax(probs, axis=1).asnumpy().tolist()[0]
     probability = mx.nd.max(probs, axis=1).asnumpy().tolist()[0]
-    print('Getting predicted class & its probability time='.format(time.time()-start))
     
     probability = '{:.4f}'.format(probability)
     predicted_name = dict_classes[int(predicted)]
@@ -88,7 +85,6 @@ def transform_fn(net, data,input_content_type, output_content_type):
 
     start = time.time()
     response = save_to_dynamodb(response, data['DETECTION_TABLE_NAME'])
-    print('Saving to dynamoDB time='.format(time.time()-start))
 
     response_body = json.dumps(response)
     return response_body, output_content_type
