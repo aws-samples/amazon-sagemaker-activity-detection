@@ -34,6 +34,8 @@ NOTE: There is a cost associated with the deployment and running of the solution
 
 To deploy the solution, `launch.sh` shell script is used. It provides a step-by-step commands and instructions. Run the script and follow the given instructions. All the AWS services are created by using [CloudFormation Stacks](https://console.aws.amazon.com/cloudformation/). After the stacks are created, please make sure they are created successfully by going to the [CloudFormation Console](https://console.aws.amazon.com/cloudformation/). Note that, at the beginning, it will ask you to provide the profile name. Provide the profile name you created in the previous section. It will take 15-20 minutes to deploy the architecture.
 
+Note: If the solution is created in `us-east-1`, please replace the `s3-${AWS::Region}` with `s3` in the each TemplateURL of th activity detection [template](./cloud_formation/cfn_activity_detection.yaml).
+
 Before running `launch.sh`, ensure that it is executable. Run the following commands:
 
 ```bash
