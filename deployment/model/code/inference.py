@@ -59,19 +59,16 @@ def transform_fn(net, data,input_content_type, output_content_type):
     
     start = time.time()
     video_data = read_video_data(data['S3_VIDEO_PATH'], data['MODEL_MAX_FRAMES'])
-    print('Loading video time={}'.format(time.time()-start))
     
     ctx = mx.gpu() if mx.context.num_gpus() else mx.cpu()
     video_input = video_data.as_in_context(ctx)
     
     start = time.time()
     probs = net(video_input.astype('float32', copy=False))
-    print('Getting predictions time={}'.format(time.time()-start))
     
     start = time.time()
     predicted = mx.nd.argmax(probs, axis=1).asnumpy().tolist()[0]
     probability = mx.nd.max(probs, axis=1).asnumpy().tolist()[0]
-    print('Getting predicted class & its probability time='.format(time.time()-start))
     
     probability = '{:.4f}'.format(probability)
     predicted_name = dict_classes[int(predicted)]
@@ -88,7 +85,6 @@ def transform_fn(net, data,input_content_type, output_content_type):
 
     start = time.time()
     response = save_to_dynamodb(response, data['DETECTION_TABLE_NAME'])
-    print('Saving to dynamoDB time='.format(time.time()-start))
 
     response_body = json.dumps(response)
     return response_body, output_content_type
@@ -199,51 +195,9 @@ def read_video_data(s3_video_path, num_frames=32):
     return clip_input
 
 
-def table_exists(dynamodb, table_name):
-    """
-    Checks if dynamoDB table exists.
-    Args:
-        dynamodb(boto3.client): DynamoDB Boto3 Client object
-        table_name(str): Table name
-    Returns:
-        True if exists otherwise False
-    """
-    response = dynamodb.list_tables()
-    if table_name in response['TableNames']:
-        return True
-    return False
-
-
-def create_table(dynamodb, table_name, key_schema, attribute_defs):
-    """
-    Creates a new dynamoDB table if not exists.
-    Args:
-        dynamodb(boto3.client): DynamoDB Boto3 Client object
-        table_name(str): Table name
-        key_schema(dict): Key schema of the table
-        attribute_defs(dict): Attribute definitions
-    Returns:
-        Status of the created table
-    """
-
-    if not table_exists(dynamodb, table_name):
-        response = dynamodb.create_table(
-            TableName=table_name,
-            KeySchema=key_schema,
-            AttributeDefinitions=attribute_defs,
-            BillingMode='PAY_PER_REQUEST'
-        )
-        status = response['TableDescription']['TableStatus']
-        while(status != 'ACTIVE'):
-            time.sleep(3)
-            response = dynamodb.describe_table(TableName=table_name)
-            status = response['Table']['TableStatus']
-        return status
-            
-        
 def save_to_dynamodb(item, table_name):
     """
-    Adds a record to a dynamodb table. It creates the table if not existing.
+    Adds a record to a dynamodb table.
     Args:
         item(dict): Record to be added
         table_name(str): Table name
@@ -252,21 +206,6 @@ def save_to_dynamodb(item, table_name):
     """
     dynamodb = boto3.client('dynamodb')
     
-    exists = table_exists(dynamodb, table_name)
-    if not exists:
-        KEY_SCHEMA = [
-            {
-                'AttributeName': 'S3Path',
-                'KeyType': 'HASH'  #Partition key
-            }]
-
-        ATTRIBUTE_DEFS=[
-            {
-                'AttributeName': 'S3Path',
-                'AttributeType': 'S'
-            }]
-        create_table(dynamodb, table_name, KEY_SCHEMA, ATTRIBUTE_DEFS)
-        
     response = dynamodb.put_item(TableName=table_name, Item=item)
     status_code = response['ResponseMetadata']['HTTPStatusCode']
     response = {'StatusCode': status_code}

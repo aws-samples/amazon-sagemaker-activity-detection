@@ -19,6 +19,10 @@ Parameters:
         Type: String
         Description: MediaLive Channel Input Name
         Default: 'activity-detection-input'
+    VideoFileName:
+        Type: String
+        Description: "Sample Video Filename."
+        Default: 'PeopleSkiing.mp4'
     #LambdaCFN
     LambdaName:
         Type: String
@@ -68,6 +72,7 @@ Resources:
                 InputName: !Ref InputName
                 InputVideoBucket: !Sub "${InputBucket}-${AWS::Region}-${AWS::AccountId}"
                 DestinationBucket: !Sub "${DestinationBucket}-${AWS::Region}-${AWS::AccountId}"
+                VideoFileName: !Ref VideoFileName
     LambdaCFN:
         Type: AWS::CloudFormation::Stack
         Properties:

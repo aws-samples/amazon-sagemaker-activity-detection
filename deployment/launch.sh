@@ -23,6 +23,9 @@ bucket_input="activity-detection-data-bucket"
 #S3 path where the templates & model artifacts are saved
 s3_data_path="s3://${bucket_input}-${region}-${account}/artifacts/amazon-sagemaker-activity-detection/deployment"
 
+#Sample video filename
+video_fname="PeopleSkiing.mp4"
+
 #Bucket name where the video segments from livestream are stored
 bucket_livestream="activity-detection-livestream-bucket"
 
@@ -77,8 +80,15 @@ wait_until_completion ${cfn_bucket}
 
 echo "Copying source code and data into ${bucket_input}-${region}-${account}..."
 #Prepare the files
-if [ ! -f PeopleSkiing.mp4 ]; then
-    cp ../videos/PeopleSkiing.mp4 .
+
+#Download model artifacts & list of classes file from an S3 bucket
+s3_model_dir="s3://aws-ml-blog/artifacts/amazon-sagemaker-activity-detection/deployment/model"
+aws s3 cp  --quiet "${s3_model_dir}/model-0000.params" "model/"
+aws s3 cp  --quiet "${s3_model_dir}/model-symbol.json" "model/"
+aws s3 cp  --quiet "${s3_model_dir}/classes.txt" "model/"
+
+if [ ! -f ${video_fname} ]; then
+    cp "../videos/${video_fname}" .
 fi
 
 if [ -f lambda/lambda_function.zip ]; then
@@ -96,15 +106,16 @@ tar -czf model/model.tar.gz --exclude=".ipynb_checkpoints" -C model/ .
 aws s3 cp "cloud_formation/" "${s3_data_path}/cloud_formation/" --recursive --quiet --exclude "*.ipynb_checkpoints/*"
 aws s3 cp "lambda/" "${s3_data_path}/lambda/" --recursive --quiet --exclude "*.ipynb_checkpoints/*"
 aws s3 cp "model/" "${s3_data_path}/model/" --recursive --quiet --exclude "*.ipynb_checkpoints/*"
-aws s3 cp PeopleSkiing.mp4 "${s3_data_path}/" --quiet
+aws s3 cp ${video_fname} "${s3_data_path}/" --quiet
 
 #Remove the extra files from the copy
-rm PeopleSkiing.mp4
+rm ${video_fname}
 rm lambda/lambda_function.zip
 rm model/model.tar.gz
 
 echo "Launching CloudFormation stack ${cfn_activity}..."
-aws cloudformation create-stack --stack-name ${cfn_activity} --template-body file://cloud_formation/cfn_activity_detection.yaml --parameters ParameterKey=InputBucket,ParameterValue=${bucket_input} ParameterKey=DestinationBucket,ParameterValue=${bucket_livestream} ParameterKey=ChannelName,ParameterValue=${medialive_channel}  ParameterKey=InputName,ParameterValue=${medialive_input} ParameterKey=LambdaName,ParameterValue=${lambda_name} ParameterKey=ModelEndpointName,ParameterValue=${endpoint_name} ParameterKey=ModelMaxFrames,ParameterValue=${model_max_frames} ParameterKey=InstanceType,ParameterValue=${instance_type} ParameterKey=MinInstanceCount,ParameterValue=${min_instance_count} ParameterKey=MaxInstanceCount,ParameterValue=${max_instance_count} ParameterKey=DDBTableName,ParameterValue=${detection_table_name} --capabilities CAPABILITY_NAMED_IAM --profile ${profile}
+aws cloudformation create-stack --stack-name ${cfn_activity} --template-body file://cloud_formation/cfn_activity_detection.yaml --parameters ParameterKey=InputBucket,ParameterValue=${bucket_input} ParameterKey=DestinationBucket,ParameterValue=${bucket_livestream} ParameterKey=ChannelName,ParameterValue=${medialive_channel} ParameterKey=InputName,ParameterValue=${medialive_input} ParameterKey=VideoFileName,ParameterValue=${video_fname}
+ParameterKey=LambdaName,ParameterValue=${lambda_name} ParameterKey=ModelEndpointName,ParameterValue=${endpoint_name} ParameterKey=ModelMaxFrames,ParameterValue=${model_max_frames} ParameterKey=InstanceType,ParameterValue=${instance_type} ParameterKey=MinInstanceCount,ParameterValue=${min_instance_count} ParameterKey=MaxInstanceCount,ParameterValue=${max_instance_count} ParameterKey=DDBTableName,ParameterValue=${detection_table_name} --capabilities CAPABILITY_NAMED_IAM --profile ${profile}
 
 #Wait until the input bucket & its cloudformation stack is successfully created
 wait_until_completion ${cfn_activity}
