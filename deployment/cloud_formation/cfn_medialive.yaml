@@ -14,6 +14,10 @@ Parameters:
         Type: String
         Description: "S3 Bucket where the input video is located."
         Default: 'activity-detection-data-bucket'
+    VideoFileName:
+        Type: String
+        Description: "Sample Video Filename."
+        Default: 'PeopleSkiing.mp4'        
     DestinationBucket:
         Type: String
         Description: S3 Bucket where the livestream video chunks are stored 
@@ -123,7 +127,7 @@ Resources:
       Name: !Ref InputName
       Type: MP4_FILE
       Sources:
-        - Url: !Sub 's3://${InputVideoBucket}/artifacts/amazon-sagemaker-activity-detection/deployment/PeopleSkiing.mp4'
+        - Url: !Sub 's3://${InputVideoBucket}/artifacts/amazon-sagemaker-activity-detection/deployment/${VideoFileName}'
         
   myMediaLiveAccessRole:
     Type: 'AWS::IAM::Role'
