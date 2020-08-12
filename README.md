@@ -1,4 +1,4 @@
-# Using Amazon SageMaker for an Activity Detection Model Training and Inference on Video Livestream
+# Using Amazon SageMaker for Activity Detection on a Live Video Stream
 
 This code repository contains two parts:
 
