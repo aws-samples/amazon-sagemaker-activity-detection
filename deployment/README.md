@@ -28,7 +28,7 @@ If you want to use the solution with your own sample video and retrained model, 
 
 ## Deploying the Solution
 
-NOTE: There is a cost associated with the deployment and running of the solution. Please remember to delete all the AWS CloudFormation stacks when you are done with it to avoid additional charges. The steps to delete are given in the next section. To estimate the cost associated with deploying and running it, please refer to the `cost estimation` section of this [blog post](#).
+NOTE: There is a cost associated with the deployment and running of the solution. Please remember to delete all the AWS CloudFormation stacks when you are done with it to avoid additional charges. The steps to delete are given in the next section. To estimate the cost associated with deploying and running it, please refer to the `cost estimation` section of this [blog post](https://aws.amazon.com/blogs/machine-learning/using-amazon-sagemaker-for-activity-detection-on-a-live-video-stream/).
 
 To deploy the solution, `launch.sh` shell script is used. It provides a step-by-step commands and instructions. Run the script and follow the given instructions. All the AWS services are created by using [CloudFormation Stacks](https://console.aws.amazon.com/cloudformation/). After the stacks are created, please make sure they are created successfully by going to the [CloudFormation Console](https://console.aws.amazon.com/cloudformation/). Note that, at the beginning, it will ask you to provide the profile name. Provide the profile name you created in the previous section. It will take 15-20 minutes to deploy the architecture.
 
