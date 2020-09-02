@@ -6,9 +6,7 @@ This code repository contains two parts:
 
 2. [Deployment](./deployment): It contains CloudFormation templates and other resources to deploy an end-to-end activity detection solution using CloudFormation
 
-A blog post associated with the code repository is found [here](#).
-
-##TODO: Update the link once the blogpost is up and running
+A blog post associated with the code repository is found [here](https://aws.amazon.com/blogs/machine-learning/using-amazon-sagemaker-for-activity-detection-on-a-live-video-stream/).
 
 ## Security
 
