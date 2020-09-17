@@ -1,4 +1,4 @@
-# Using Amazon SageMaker for Activity Detection on a Live Video Stream
+# Activity Detection on a Live Video Stream with Amazon SageMaker
 
 This code repository contains two parts:
 
@@ -6,7 +6,7 @@ This code repository contains two parts:
 
 2. [Deployment](./deployment): It contains CloudFormation templates and other resources to deploy an end-to-end activity detection solution using CloudFormation
 
-A blog post associated with the code repository is found [here](https://aws.amazon.com/blogs/machine-learning/using-amazon-sagemaker-for-activity-detection-on-a-live-video-stream/).
+A blog post associated with the code repository is found [here](https://aws.amazon.com/blogs/machine-learning/activity-detection-on-a-live-video-stream-with-amazon-sagemaker/).
 
 ## Security
 
