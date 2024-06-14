@@ -37,7 +37,7 @@ Resources:
         Type: AWS::Lambda::Function
         Properties:
             FunctionName: !Ref LambdaName
-            Runtime: python3.6
+            Runtime: python3.9
             Role: !GetAtt LivestreamLambdaRole.Arn
             Code: 
                 S3Bucket: !Ref LambdaCodeBucket
